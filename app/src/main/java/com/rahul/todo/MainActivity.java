@@ -10,9 +10,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.rahul.todo.Adaptor.TaskAdaptor;
+import com.rahul.todo.Class.ListItem;
 import com.rahul.todo.Class.Task;
+import com.rahul.todo.Class.TaskCategory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends Activity {
 
@@ -22,29 +25,57 @@ public class MainActivity extends Activity {
     public final static String TAG_ADD_TASK_DATA = "NewTask";
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ArrayList<Task> mListTask = new ArrayList();
+        ArrayList<ListItem> mTemp = new ArrayList();
 
-        //for simplicity we will add the same name for 20 times to populate the list view
+        String header = "";
         for (int i = 0; i < 20; i++) {
-            Task task = new Task("Savita  " + i, "Rahul 2+ " + i, false);
-            mListTask.add(task);
+            Task task = new Task("SOS  " + i, "Rahul 2+ " + i, false,"Default");
+
+            if(i%5==0){
+                task.setCategory("Personal");
+            }
+            mTemp.add(task);
         }
 
-        //relate the listView from java to the one created in xml
-        myList = findViewById(R.id.listview_task);
+        mTemp = sortAndAddCategory(mTemp);
 
-        //show the ListView on the screen
-        // The adapter MyCustomAdapter is responsible for maintaining the data backing this list and for producing
-        // a view to represent an item in that data set.
-        myList.setAdapter(new TaskAdaptor(this, mListTask));
+        myList = (ListView) findViewById(R.id.listview_task);
+
+        TaskAdaptor adapter = new TaskAdaptor(this, mTemp);
+        myList.setAdapter(adapter);
 
 
     }
+
+    private ArrayList sortAndAddCategory(ArrayList<ListItem> itemList) {
+
+        ArrayList<ListItem> tempList = new ArrayList();
+        //First we sort the array
+        Collections.sort(itemList);
+
+        //Loops through the list and add a section before each start
+        String header = "";
+        for (int i = 0; i < itemList.size(); i++) {
+
+            Task task = (Task) itemList.get(i);
+            if (header != task.getCategory()) {
+                header = task.getCategory();
+
+                TaskCategory tc = new TaskCategory(task.getCategory());
+                tempList.add(tc);
+            }
+            tempList.add(task);
+        }
+
+        return tempList;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,7 +107,7 @@ public class MainActivity extends Activity {
                     Task t = (Task) b.getSerializable(TAG_ADD_TASK_DATA);
                     Toast.makeText(getApplicationContext(), "Title : " + t.getTitle(),
                             Toast.LENGTH_LONG).show();
-                } else  {
+                } else {
                     Toast.makeText(getApplicationContext(), "RESULT CANCELLED", Toast.LENGTH_LONG).show();
 
                 }

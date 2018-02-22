@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by Rahul R. on 21/02/2018.
  */
 
-public class Task implements Comparable<Task>, Serializable {
+public class Task extends ListItem implements Serializable {
 
     // enum Category{Default, Personal, Work, Shopping};
 
@@ -17,7 +17,6 @@ public class Task implements Comparable<Task>, Serializable {
      * Optional
      * It is optional fields that's why they are separated,
      * when to notify the user and category divide them - prioritise.
-     *
      */
     private Date date, time;
     //Repeat private;
@@ -42,11 +41,11 @@ public class Task implements Comparable<Task>, Serializable {
         this.taskComplete = false;
     }
 
-    public Task(String title, String description, boolean taskComplete) {
+    public Task(String title, String description, boolean taskComplete, String category) {
         this.date = new Date();
         this.time = new Date();
 
-        this.category = "Default";
+        this.category = category;
         this.title = title;
         this.description = description;
         this.taskComplete = taskComplete;
@@ -102,14 +101,12 @@ public class Task implements Comparable<Task>, Serializable {
 
 
     @Override
-    public int compareTo( Task o) {
-        Date compareQuantity = o.getDate();
+    public boolean isSection() {
+        return false;
+    }
 
-        //ascending order
-        //return getDate() - compareQuantity;
-
-        //descending order
-        //return compareQuantity - this.quantity;
+    @Override
+    public int compareTo( Object o) {
         return 0;
     }
 }

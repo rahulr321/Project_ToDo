@@ -8,7 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.rahul.todo.Class.ListItem;
 import com.rahul.todo.Class.Task;
+import com.rahul.todo.Class.TaskCategory;
 import com.rahul.todo.R;
 
 import java.util.ArrayList;
@@ -22,10 +24,10 @@ public class TaskAdaptor extends BaseAdapter {
     private LayoutInflater mInflater;
 
     //Read: https://stackoverflow.com/questions/322715/when-to-use-linkedlist-over-arraylist
-    private ArrayList<Task> mListTask;
+    private ArrayList<ListItem> mListTask;
 
     //Constructor used to initialise the Adaptor for the ListView
-    public TaskAdaptor(Context context, ArrayList<Task> items) {
+    public TaskAdaptor(Context context, ArrayList<ListItem> items) {
         mContext = context;
         mListTask = items;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -50,45 +52,47 @@ public class TaskAdaptor extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        //creating a TaskViewHolder reference
-        TaskViewHolder taskViewHolder;
+        if (mListTask.get(position).isSection()) {
+            /**
+             * if ItemList is category
+             * could use ViewHolder
+             */
+            convertView = inflater.inflate(R.layout.list_item_category, parent, false);
+            TextView textViewCategory = (TextView) convertView.findViewById(R.id.textview_task_category);
+            textViewCategory.setText(((TaskCategory)mListTask.get(position)).getCategoryTitle());
+        }
+        else {
+            //Its Task-item
+            //creating a TaskViewHolder reference
 
-        //checking to see if convertView is null or not, if not null reuse it
-        if (convertView == null) {
-            // inflate the layout
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_task, parent, false);
+
+            TaskViewHolder taskViewHolder;
+
+
+
+            convertView = inflater.inflate(R.layout.list_item_task, parent, false);
 
             //initialise the TaskViewHolder with the inflated view
             taskViewHolder = new TaskViewHolder(convertView);
 
-            //store the tag with view
-            convertView.setTag(taskViewHolder);
-        } else {
-            /**
-             * Prevents program from using findViewById() every time user scroll and
-             * get stored view holder object using getTag
-             */
-            taskViewHolder = (TaskViewHolder) convertView.getTag();
-        }
+            //Create  reference  variable to hold data
+            Task task = (Task) mListTask.get(position);
 
-        //Create  reference  variable to hold data
-        Task task = mListTask.get(position);
+            if (task != null) {
+                //set the item name on the  taskViewHolder
+                taskViewHolder.textViewTaskTitle.setText(task.getTitle());
+                taskViewHolder.textViewTaskDescription.setText(task.getDescription());
 
-        if (task != null) {
-            //set the item name on the  taskViewHolder
-            taskViewHolder.textViewTaskTitle.setText(task.getTitle());
-            taskViewHolder.textViewTaskDescription.setText(task.getDescription());
+                //may changed
+                if (task.isTaskComplete()) {
+                    taskViewHolder.checkBoxTaskComplete.setChecked(true);
+                } else {
+                    taskViewHolder.checkBoxTaskComplete.setChecked(false);
+                }
 
-            //may changed
-            if (task.isTaskComplete()) {
-                taskViewHolder.checkBoxTaskComplete.setChecked(true);
-            } else {
-                taskViewHolder.checkBoxTaskComplete.setChecked(false);
             }
-
-        } else {
-            taskViewHolder.textViewTaskDescription.setText("Unknown");
         }
 
         return convertView;
