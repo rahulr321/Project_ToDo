@@ -1,16 +1,19 @@
 package com.rahul.todo.Class;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by Droid on 21/02/2018.
+ *
+ *
+ * Created by Rahul R. on 21/02/2018.
  */
 
-public class Task {
+public class Task implements Comparable<Task>, Serializable {
 
     // enum Category{Default, Personal, Work, Shopping};
 
-    /*
+    /**
      * Optional
      * It is optional fields that's why they are separated,
      * when to notify the user and category divide them - prioritise.
@@ -37,6 +40,16 @@ public class Task {
         this.title = "";
         this.description = "";
         this.taskComplete = false;
+    }
+
+    public Task(String title, String description, boolean taskComplete) {
+        this.date = new Date();
+        this.time = new Date();
+
+        this.category = "Default";
+        this.title = title;
+        this.description = description;
+        this.taskComplete = taskComplete;
     }
 
     public Date getDate() {
@@ -85,5 +98,18 @@ public class Task {
 
     public void setTaskComplete(boolean taskComplete) {
         this.taskComplete = taskComplete;
+    }
+
+
+    @Override
+    public int compareTo( Task o) {
+        Date compareQuantity = o.getDate();
+
+        //ascending order
+        //return getDate() - compareQuantity;
+
+        //descending order
+        //return compareQuantity - this.quantity;
+        return 0;
     }
 }

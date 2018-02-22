@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.rahul.todo.Class.Task;
 import com.rahul.todo.R;
@@ -12,34 +14,33 @@ import com.rahul.todo.R;
 import java.util.ArrayList;
 
 /**
- * Created by Droid on 21/02/2018.
+ * Created by Rahul R. on 21/02/2018.
  */
 
 public class TaskAdaptor extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
-    private ArrayList<Task> mTask;
+
+    //Read: https://stackoverflow.com/questions/322715/when-to-use-linkedlist-over-arraylist
+    private ArrayList<Task> mListTask;
 
     //Constructor used to initialise the Adaptor for the ListView
     public TaskAdaptor(Context context, ArrayList<Task> items) {
         mContext = context;
-        mTask = items;
+        mListTask = items;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    /*
-    *  Let ListView knows how many items are in the data source
-     */
-
+    //Let ListView knows how many items are in the data source
     @Override
     public int getCount() {
-        return mTask.size();
+        return mListTask.size();
     }
 
     @Override
     public Object getItem(int position) {
-        //could put if statement bound checking
-        return mTask.get(position);
+        //could put if statement for bound checking
+        return mListTask.get(position);
     }
 
     @Override
@@ -50,8 +51,63 @@ public class TaskAdaptor extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        // Get view for row item
-        View rowView = mInflater.inflate(R.layout.list_item_task, parent, false);
-        return rowView;
+        //creating a TaskViewHolder reference
+        TaskViewHolder taskViewHolder;
+
+        //checking to see if convertView is null or not, if not null reuse it
+        if (convertView == null) {
+            // inflate the layout
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_task, parent, false);
+
+            //initialise the TaskViewHolder with the inflated view
+            taskViewHolder = new TaskViewHolder(convertView);
+
+            //store the tag with view
+            convertView.setTag(taskViewHolder);
+        } else {
+            /**
+             * Prevents program from using findViewById() every time user scroll and
+             * get stored view holder object using getTag
+             */
+            taskViewHolder = (TaskViewHolder) convertView.getTag();
+        }
+
+        //Create  reference  variable to hold data
+        Task task = mListTask.get(position);
+
+        if (task != null) {
+            //set the item name on the  taskViewHolder
+            taskViewHolder.textViewTaskTitle.setText(task.getTitle());
+            taskViewHolder.textViewTaskDescription.setText(task.getDescription());
+
+            //may changed
+            if (task.isTaskComplete()) {
+                taskViewHolder.checkBoxTaskComplete.setChecked(true);
+            } else {
+                taskViewHolder.checkBoxTaskComplete.setChecked(false);
+            }
+
+        } else {
+            taskViewHolder.textViewTaskDescription.setText("Unknown");
+        }
+
+        return convertView;
+    }
+
+
+    /**
+     * Using View Holder Design Pattern to reduce performance
+     * impact when scrolling through ListView
+     */
+
+    private class TaskViewHolder {
+        protected TextView textViewTaskTitle, textViewTaskDescription;
+        protected CheckBox checkBoxTaskComplete;
+
+        public TaskViewHolder(View view) {
+            textViewTaskTitle = view.findViewById(R.id.textview_task_title);
+            textViewTaskDescription = view.findViewById(R.id.textview_task_description);
+            checkBoxTaskComplete = view.findViewById(R.id.checkbox_task_complete);
+        }
     }
 }
