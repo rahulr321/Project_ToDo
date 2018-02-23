@@ -106,20 +106,20 @@ public class Task extends ListItem {
     @Override
     public int compareTo(Object o) {
         Task t = (Task) o;
+/**
+ int n = 0;
+ //check if
+ if (time.getYear() != 1970) {
+ n = this.getTime().compareTo(((Task) o).getTime());
+ } else {
+ n = this.getDate().compareTo(((Task) o).getDate());
+ }
 
-        int n = 0;
-        //check if
-        if (time.getYear() != 1970) {
-            n = this.getTime().compareTo(((Task) o).getTime());
-        } else {
-            n = this.getDate().compareTo(((Task) o).getDate());
-        }
 
-        /**
-         * the value 0 if the argument Date is equal to this Date;
-         * a value less than 0 if this Date is before the Date argument;
-         * and a value greater than 0 if this Date is after the Date argument.
-         */
+ * the value 0 if the argument Date is equal to this Date;
+ * a value less than 0 if this Date is before the Date argument;
+ * and a value greater than 0 if this Date is after the Date argument.
+ */
 
         /*if (this.getCategory().compareTo(t.getCategory()) == 0) {
             return this.getTime().compareTo(t.getTime());
@@ -146,12 +146,12 @@ public class Task extends ListItem {
 
         String dateTime = "";
         if (date.getYear() != 1970) {
-            dateTime = " . " + date.getDay() + "/" + date.getMonth() + "/" + date.getYear() + " . ";
+            dateTime = " . " + date.getDay() + "/" + date.getMonth() + "/" + date.getYear() + " ,  ";
             if (time.getHours() != 0 && time.getMinutes() != 0) {
                 dateTime = +date.getDay() + "/" + date.getMonth() + "/" + date.getYear() + " ";
 
             }
         }
-        return getCategory() + dateTime;
+        return getCategory() + ", " + dateTime;
     }
 }

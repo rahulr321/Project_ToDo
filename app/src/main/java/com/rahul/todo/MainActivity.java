@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.rahul.todo.Adaptor.TaskAdaptor;
 import com.rahul.todo.Class.ListItem;
 import com.rahul.todo.Class.Task;
-import com.rahul.todo.Class.TaskCategory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 
 public class MainActivity extends Activity implements AdapterView.OnItemClickListener {
 
@@ -41,48 +40,30 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     private ArrayList<Task> mListTask;
     private TaskAdaptor adapter;
 
+    private static int lastPositionClick = -1;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mListView = findViewById(R.id.listview_task);
-        mListView.setOnItemClickListener(this);
 
         mContext = getApplicationContext();
-        mListTask = new ArrayList();
+        mListTask = new ArrayList<Task>();
 
-
+        for (int i = 0; i < 20; i++) {
+            Task task = new Task("KDDK  " + i, "Rahul 2+ " + i, false, "Default", new Date(), new Date());
+            mListTask.add(task);
+        }
         adapter = new TaskAdaptor(this, mListTask);
+        mListView.setOnItemClickListener(this);
         mListView.setAdapter(adapter);
 
         loadDateFromFile();
 
     }
-
-    private ArrayList sortAndAddCategory(ArrayList<ListItem> itemList) {
-
-        ArrayList<ListItem> tempList = new ArrayList();
-        //First we sort the array
-        Collections.sort(itemList);
-
-        //Loops through the list and add a section before each start
-        String header = "";
-        for (int i = 0; i < itemList.size(); i++) {
-
-            Task task = (Task) itemList.get(i);
-            if (header != task.getCategory()) {
-                header = task.getCategory();
-
-                TaskCategory tc = new TaskCategory(task.getCategory());
-                tempList.add(tc);
-            }
-            tempList.add(task);
-        }
-
-        return tempList;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -111,26 +92,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     }
 
     //Listen when user has existed add activity
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case TAG_ADD_TASK:
-            if (resultCode == Activity.RESULT_OK) {
-                Bundle b = data.getExtras();
-                if (b != null) {
-                    //item received successfully
-
-                    Task t = (Task) b.getSerializable(TAG_ADD_TASK_DATA);
-                    mListTask.add(t);
-                    adapter.notifyDataSetChanged();
-
-                } else {
-                    Toast.makeText(mContext, "CANCELLED", Toast.LENGTH_LONG).show();
-
-                }
-            }
-            break;
-            case TAG_EDIT_TASK:
-
                 if (resultCode == Activity.RESULT_OK) {
                     Bundle b = data.getExtras();
                     if (b != null) {
@@ -141,11 +106,27 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                         adapter.notifyDataSetChanged();
 
                     } else {
-                        Toast.makeText(mContext, "CANCELLED", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, "CANCELLED", Toast.LENGTH_SHORT).show();
 
                     }
                 }
+                break;
+            case TAG_EDIT_TASK:
 
+                if (resultCode == Activity.RESULT_OK) {
+                    Bundle b = data.getExtras();
+                    if (b != null) {
+                        //item received successfully
+
+                        Task t = (Task) b.getSerializable(TAG_ADD_TASK_DATA);
+                        mListTask.add(lastPositionClick, t);
+                        adapter.notifyDataSetChanged();
+                        lastPositionClick = -1;
+                    } else {
+                        Toast.makeText(mContext, "CANCELLED", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
 
 
         }
@@ -206,141 +187,48 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        //only listen task not category
-        if (mListTask.get(position) instanceof Task) {
 
-            final String option[] = new String[]{"Toggle Task ", "Edit", "Delete "};
+        final String option[] = new String[]{"Toggle Task ", "Edit", "Delete "};
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("What would like to do");
-            builder.setItems(option, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int userOptionChosen) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("What would like to do");
+        builder.setItems(option, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int userOptionChosen) {
 
-                    //user chosen option from
-                    switch (userOptionChosen) {
-                        case 0:
-                            //task completed
-                            Task t = (Task) mListTask.get(position);
-                            boolean ok;
-                            if (t.isTaskComplete()) {
-                                ok = false;
-                            } else {
-                                ok = false;
-                            }
-                            t.setTaskComplete(ok);
-                            mListTask.add(t);
-                            adapter.notifyDataSetChanged();
+                //user chosen option from
+                switch (userOptionChosen) {
+                    case 0:
+                        //task completed
+                        Task t = (Task) mListTask.get(position);
+                        boolean ok;
+                        if (t.isTaskComplete()) {
+                            ok = false;
+                        } else {
+                            ok = false;
+                        }
+                        t.setTaskComplete(ok);
+                        mListTask.add(t);
+                        adapter.notifyDataSetChanged();
 
-                            return;
-                    }
+                        break;
+                    case 1:
+
+                        Task task = (Task) mListTask.get(position);
+
+                        Intent intent = new Intent(mContext, EditActivity.class);
+                        intent.putExtra(TAG_Edit_TASK_DATA, task);
+                        lastPositionClick = position;
+                        mListTask.remove(position);
+                        startActivity(intent);
+
+                        break;
+                    case 2:
+                        mListTask.remove(position);
+                        adapter.notifyDataSetChanged();
                 }
-            });
-            builder.show();
-        }
+            }
+        });
+        builder.show();
     }
-
-
-   /* private void ssortAndAddTask(Task newItem) {
-
-        if (newItem != null) {
-            //create new collection for all the task and category;
-            ArrayList<ListItem> tempAllTaskAndCategory = new ArrayList();
-            tempAllTaskAndCategory.addAll(mListTask);
-            tempAllTaskAndCategory.add(newItem);
-
-            //only contain task
-            ArrayList<ListItem> unCategoryList = new ArrayList();
-            //new list for adaptor with sorted and category
-            ArrayList<ListItem> tempList = new ArrayList();
-
-            //partition big array into smaller
-            ArrayList<ListItem> tempOverDueList = new ArrayList();
-            ArrayList<ListItem> tempTodayList = new ArrayList();
-            ArrayList<ListItem> tempFollowingDaysList = new ArrayList();
-            ArrayList<ListItem> tempNoDateList = new ArrayList();
-
-
-            Date currentTime = Calendar.getInstance().getTime();
-
-            //could have just remove the list item
-            for (int x = 0; x < tempAllTaskAndCategory.size(); x++) {
-                if (tempAllTaskAndCategory.get(x).isSection() == false) {
-                    unCategoryList.add(tempAllTaskAndCategory.get(x));
-                }
-
-            }
-
-
-            for (int i = 0; i < unCategoryList.size(); i++) {
-                Task task = (Task) unCategoryList.get(i);
-
-                //check task date and time and divide them into their respective list and then join;
-                *//***
-     * the value 0 if the argument Date is equal to this Date;
-     * a value less than 0 if this Date is before the Date argument;
-     * and a value greater than 0 if this Date is after the Date argument.
-     *//*
-
-                if (task.getDate().getYear() == 1970) {
-                    tempNoDateList.add(task);
-                } else if (task.getDate().compareTo(currentTime) == 0) {
-                    tempTodayList.add(task);
-                } else if (task.getDate().compareTo(currentTime) > 0) {
-                    tempFollowingDaysList.add(task);
-                } else if (task.getDate().compareTo(currentTime) < 0) {
-                    tempOverDueList.add(task);
-                }
-
-            }
-
-            //sort all partition list
-            Collections.sort(tempOverDueList);
-            Collections.sort(tempTodayList);
-            Collections.sort(tempFollowingDaysList);
-            Collections.sort(tempNoDateList);
-
-            //Add all partition list in order, to display
-            TaskCategory tc;
-            if (tempOverDueList.size() > 0) {
-
-                tc = new TaskCategory("Over Due");
-                tempList.add(tc);
-                tempList.addAll(tempOverDueList);
-                Log.e("MainActivty:", "OverDue Task Collection added");
-
-            }
-
-            if (tempTodayList.size() > 0) {
-
-                tc = new TaskCategory("Today");
-                tempList.add(tc);
-                tempList.addAll(tempTodayList);
-                Log.e("MainActivty:", "Upcoming Days Task Collection added");
-
-            }
-            if (tempFollowingDaysList.size() > 0) {
-
-                tc = new TaskCategory("Upcoming Days");
-                tempList.add(tc);
-                tempList.addAll(tempFollowingDaysList);
-                Log.e("MainActivty:", "Upcoming Days Task Collection added");
-
-            }
-            if (tempNoDateList.size() > 0) {
-
-                tc = new TaskCategory("No Date");
-                tempList.add(tc);
-                tempList.addAll(tempNoDateList);
-
-                Log.e("MainActivty:", "No Date Task Collection added");
-            }
-
-            //
-            mListTask = tempList;
-        }
-        adapter.notifyDataSetChanged();
-
-    }*/
-
 }

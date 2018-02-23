@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Created by Rahul R. on 21/02/2018.
  */
 
-public class TaskAdaptor extends BaseAdapter {
+public class TaskAdaptor extends ArrayAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
 
@@ -27,6 +27,7 @@ public class TaskAdaptor extends BaseAdapter {
 
     //Constructor used to initialise the Adaptor for the ListView
     public TaskAdaptor(Context context, ArrayList<Task> items) {
+        super(context, 0, items);
         mContext = context;
         mListTask = items;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -58,7 +59,7 @@ public class TaskAdaptor extends BaseAdapter {
         //checking to see if convertView is null or not, if not null reuse it
         if (convertView == null) {
             // inflate the layout
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_task, parent, false);
+            convertView = mInflater.from(mContext).inflate(R.layout.list_item_task, null);
 
             //initialise the TaskViewHolder with the inflated view
             taskViewHolder = new TaskViewHolder(convertView);
@@ -74,7 +75,7 @@ public class TaskAdaptor extends BaseAdapter {
         }
 
         //Create  reference  variable to hold data
-        Task task = (Task) mListTask.get(position);
+        Task task = mListTask.get(position);
 
         if (task != null) {
 
@@ -100,7 +101,6 @@ public class TaskAdaptor extends BaseAdapter {
      * Using View Holder Design Pattern to reduce performance
      * impact when scrolling through ListView
      */
-
     private class TaskViewHolder {
         protected TextView textViewTaskTitle, textViewTaskDescription, textviewOtherDetails;
         protected CheckBox checkBoxTaskComplete;
