@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
     private TaskAdaptor adapter;
 
     private static int lastPositionClick = -1;
+    private static Task lastEditTask = null;
 
 
     @Override
@@ -51,15 +52,18 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
         mListView = findViewById(R.id.listview_task);
 
         mContext = getApplicationContext();
-        mListTask = new ArrayList<Task>();
+
+        //testing
+        mListTask = new ArrayList<>();
 
         for (int i = 0; i < 20; i++) {
             Task task = new Task("KDDK  " + i, "Rahul 2+ " + i, false, "Default", new Date(), new Date());
             mListTask.add(task);
         }
+
         adapter = new TaskAdaptor(this, mListTask);
-        mListView.setOnItemClickListener(this);
         mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(this);
 
         loadDateFromFile();
 
@@ -122,6 +126,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                         mListTask.add(lastPositionClick, t);
                         adapter.notifyDataSetChanged();
                         lastPositionClick = -1;
+                        lastEditTask = null;
+
                     } else {
                         Toast.makeText(mContext, "CANCELLED", Toast.LENGTH_SHORT).show();
 
@@ -214,11 +220,13 @@ public class MainActivity extends Activity implements AdapterView.OnItemClickLis
                         break;
                     case 1:
 
-                        Task task = (Task) mListTask.get(position);
+                        Task task = mListTask.get(position);
 
                         Intent intent = new Intent(mContext, EditActivity.class);
                         intent.putExtra(TAG_Edit_TASK_DATA, task);
                         lastPositionClick = position;
+                        lastEditTask = task;
+
                         mListTask.remove(position);
                         startActivity(intent);
 

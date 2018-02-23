@@ -25,7 +25,7 @@ public class EditActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-
+        updateUIFromModel();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class EditActivity extends Activity {
             case R.id.action_complete:
                 //check for validation
 
-                Task task = UpdateModelFromUI();
+                Task task = updateModelFromUI();
                 if (task != null) {
 
                     Intent intent = new Intent();
@@ -59,8 +59,9 @@ public class EditActivity extends Activity {
     }
 
 
+
     //return task detail if it valid
-    private Task UpdateModelFromUI() {
+    private Task updateModelFromUI() {
         EditText editTextTitle = findViewById(R.id.edittext_task_title);
         EditText editTextDescription = findViewById(R.id.edittext_task_description);
         DatePicker datePicker = findViewById(R.id.dp_date);
@@ -86,6 +87,26 @@ public class EditActivity extends Activity {
 
         return t;
 
+    }
+
+    private void updateUIFromModel() {
+        Intent intent = getIntent();
+        Bundle bd = intent.getExtras();
+        if (bd != null) {
+            Task t = (Task) bd.get(TAG_Edit_TASK_DATA);
+
+            EditText editTextTitle = findViewById(R.id.edittext_task_title);
+            EditText editTextDescription = findViewById(R.id.edittext_task_description);
+            DatePicker datePicker = findViewById(R.id.dp_date);
+            TimePicker timePickerPicker = findViewById(R.id.dp_time);
+
+            editTextDescription.setText(t.getDescription());
+            editTextDescription.setText(t.getTitle());
+
+            //need to check
+            //datePicker.set(t.getDescription());
+            //timePickerPicker.setText(t.getDescription());
+        }
     }
 
     public java.util.Date getDateFrom(DatePicker datePicker) {
