@@ -7,8 +7,12 @@
     <string name="task_date">Due Date</string>
     <string name="task_date_not_set">Date not set</string>
     <string name="task_time_not_set">Time not set</string>
+    <string name="task_time_select">Choose Time</string>
     <string name="menu_add_task">Add Task</string>
     <string name="menu_complete_task">Add to the List</string>
     <string name="add_activity_title">Add Task</string>
     <string name="list_category">Category</string>
+    <string name="file_dataset">data.txt</string>
+    <string name="title_activity_edit">EditActivity</string>
+
 </resources>

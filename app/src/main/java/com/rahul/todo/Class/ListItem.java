@@ -5,9 +5,11 @@ package com.rahul.todo.Class;
  */
 
 
+import java.io.Serializable;
+
 /**
  * This class will be used as the Row in the ListView
  */
-public abstract class ListItem implements Comparable{
+public abstract class ListItem implements Comparable, Serializable {
     public abstract boolean isSection();
 }

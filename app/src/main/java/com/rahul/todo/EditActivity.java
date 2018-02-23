@@ -17,15 +17,14 @@ import com.rahul.todo.Class.Task;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.rahul.todo.MainActivity.TAG_ADD_TASK_DATA;
+import static com.rahul.todo.MainActivity.TAG_Edit_TASK_DATA;
 
-public class AddActivity extends Activity {
-
+public class EditActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_edit);
 
     }
 
@@ -46,13 +45,10 @@ public class AddActivity extends Activity {
                 if (task != null) {
 
                     Intent intent = new Intent();
-                    intent.putExtra(TAG_ADD_TASK_DATA, task);
+                    intent.putExtra(TAG_Edit_TASK_DATA, task);
                     setResult(RESULT_OK, intent);
                     finish();
-                } /*else {
-                    Toast.makeText(getApplicationContext(), "Enter Validate Details",
-                            Toast.LENGTH_SHORT).show();
-                }*/
+                }
 
                 return true;
 
@@ -82,28 +78,10 @@ public class AddActivity extends Activity {
                     Toast.LENGTH_SHORT).show();
             return null;
         }
-        /*
-            Date currentTime = Calendar.getInstance().getTime();
-
-            if (dateToBe.compareTo(currentTime) < 0) {
-                Toast.makeText(getApplicationContext(), "Must be Today or Future Date only",
-                        Toast.LENGTH_SHORT).show();
-                return null;
-            }
-
-            //if it today and then time must be greater than now
-            if (dateToBe.compareTo(currentTime) == 0) {
-                if (timeToBe.compareTo(currentTime) > 0) {
-                    Toast.makeText(getApplicationContext(), "Time Must be in the future",
-                            Toast.LENGTH_SHORT).show();
-                    return null;
-                }
-            }
-        */
-         Task t=new Task(tempTitle, tempDescription, false, "Default",
+        Task t = new Task(tempTitle, tempDescription, false, "Default",
                 dateToBe, timeToBe);
 
-        Log.e("AddActivty","Following is sent back to add : "+t.toString());
+        Log.e("EditActivty", "Following is sent back to append : " + t.toString());
 
 
         return t;

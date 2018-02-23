@@ -1,15 +1,12 @@
 package com.rahul.todo.Class;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- *
- *
  * Created by Rahul R. on 21/02/2018.
  */
 
-public class Task extends ListItem implements Serializable {
+public class Task extends ListItem {
 
     // enum Category{Default, Personal, Work, Shopping};
 
@@ -41,9 +38,9 @@ public class Task extends ListItem implements Serializable {
         this.taskComplete = false;
     }
 
-    public Task(String title, String description, boolean taskComplete, String category) {
-        this.date = new Date();
-        this.time = new Date();
+    public Task(String title, String description, boolean taskComplete, String category, Date date, Date time) {
+        this.date = date;
+        this.time = time;
 
         this.category = category;
         this.title = title;
@@ -105,8 +102,56 @@ public class Task extends ListItem implements Serializable {
         return false;
     }
 
+
     @Override
-    public int compareTo( Object o) {
+    public int compareTo(Object o) {
+        Task t = (Task) o;
+
+        int n = 0;
+        //check if
+        if (time.getYear() != 1970) {
+            n = this.getTime().compareTo(((Task) o).getTime());
+        } else {
+            n = this.getDate().compareTo(((Task) o).getDate());
+        }
+
+        /**
+         * the value 0 if the argument Date is equal to this Date;
+         * a value less than 0 if this Date is before the Date argument;
+         * and a value greater than 0 if this Date is after the Date argument.
+         */
+
+        /*if (this.getCategory().compareTo(t.getCategory()) == 0) {
+            return this.getTime().compareTo(t.getTime());
+        }*/
         return 0;
+    }
+
+    @Override
+    public String toString() {
+
+        String dateTime = "";
+        if (date.getYear() != 1970) {
+            dateTime = date.getDay() + "/" + date.getMonth() + "/" + date.getYear() + " , ";
+            if (time.getHours() != 0 && time.getMinutes() != 0) {
+                dateTime = dateTime + date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+
+            }
+        }
+
+        return "[" + getTitle() + ", " + getDescription() + ", " + getCategory() + ", " + dateTime + "]";
+    }
+
+    public String getOtherDetail() {
+
+        String dateTime = "";
+        if (date.getYear() != 1970) {
+            dateTime = " . " + date.getDay() + "/" + date.getMonth() + "/" + date.getYear() + " . ";
+            if (time.getHours() != 0 && time.getMinutes() != 0) {
+                dateTime = +date.getDay() + "/" + date.getMonth() + "/" + date.getYear() + " ";
+
+            }
+        }
+        return getCategory() + dateTime;
     }
 }

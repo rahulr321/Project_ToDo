@@ -31,6 +31,7 @@ public class TaskCategory extends ListItem {
 
     @Override
     public int compareTo( Object o) {
-        return 0;
+        TaskCategory t= (TaskCategory) o;
+        return this.getCategoryTitle().compareTo(t.getCategoryTitle());
     }
 }

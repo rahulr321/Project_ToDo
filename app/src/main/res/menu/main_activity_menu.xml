@@ -6,4 +6,14 @@
         android:icon="@android:drawable/ic_input_add"
         android:showAsAction="always"
         android:title="@string/menu_add_task" />
+    <item
+        android:id="@+id/action_save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:showAsAction="always"
+        android:title="Save to File" />
+    <item
+        android:id="@+id/action_open"
+        android:icon="?android:attr/actionModePasteDrawable"
+        android:showAsAction="always"
+        android:title="Open File" />
 </menu>

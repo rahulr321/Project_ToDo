@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.rahul.todo.Class.ListItem;
 import com.rahul.todo.Class.Task;
-import com.rahul.todo.Class.TaskCategory;
 import com.rahul.todo.R;
 
 import java.util.ArrayList;
@@ -24,10 +23,10 @@ public class TaskAdaptor extends BaseAdapter {
     private LayoutInflater mInflater;
 
     //Read: https://stackoverflow.com/questions/322715/when-to-use-linkedlist-over-arraylist
-    private ArrayList<ListItem> mListTask;
+    private ArrayList<Task> mListTask;
 
     //Constructor used to initialise the Adaptor for the ListView
-    public TaskAdaptor(Context context, ArrayList<ListItem> items) {
+    public TaskAdaptor(Context context, ArrayList<Task> items) {
         mContext = context;
         mListTask = items;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -52,47 +51,45 @@ public class TaskAdaptor extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        if (mListTask.get(position).isSection()) {
-            /**
-             * if ItemList is category
-             * could use ViewHolder
-             */
-            convertView = inflater.inflate(R.layout.list_item_category, parent, false);
-            TextView textViewCategory = (TextView) convertView.findViewById(R.id.textview_task_category);
-            textViewCategory.setText(((TaskCategory)mListTask.get(position)).getCategoryTitle());
-        }
-        else {
-            //Its Task-item
-            //creating a TaskViewHolder reference
+        //creating a TaskViewHolder reference
+        TaskViewHolder taskViewHolder;
 
-
-            TaskViewHolder taskViewHolder;
-
-
-
-            convertView = inflater.inflate(R.layout.list_item_task, parent, false);
+        //checking to see if convertView is null or not, if not null reuse it
+        if (convertView == null) {
+            // inflate the layout
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_task, parent, false);
 
             //initialise the TaskViewHolder with the inflated view
             taskViewHolder = new TaskViewHolder(convertView);
 
-            //Create  reference  variable to hold data
-            Task task = (Task) mListTask.get(position);
+            //store the tag with view
+            convertView.setTag(taskViewHolder);
+        } else {
+            /**
+             * Prevents program from using findViewById() every time user scroll and
+             * get stored view holder object using getTag
+             */
+            taskViewHolder = (TaskViewHolder) convertView.getTag();
+        }
 
-            if (task != null) {
-                //set the item name on the  taskViewHolder
-                taskViewHolder.textViewTaskTitle.setText(task.getTitle());
-                taskViewHolder.textViewTaskDescription.setText(task.getDescription());
+        //Create  reference  variable to hold data
+        Task task = (Task) mListTask.get(position);
 
-                //may changed
-                if (task.isTaskComplete()) {
-                    taskViewHolder.checkBoxTaskComplete.setChecked(true);
-                } else {
-                    taskViewHolder.checkBoxTaskComplete.setChecked(false);
-                }
+        if (task != null) {
 
+            //set the item name on the  taskViewHolder
+            taskViewHolder.textViewTaskTitle.setText(task.getTitle());
+            taskViewHolder.textViewTaskDescription.setText(task.getDescription());
+
+            //may changed
+            if (task.isTaskComplete()) {
+                taskViewHolder.checkBoxTaskComplete.setChecked(true);
+            } else {
+                taskViewHolder.checkBoxTaskComplete.setChecked(false);
             }
+            taskViewHolder.textviewOtherDetails.setText(task.getOtherDetail());
+
         }
 
         return convertView;
@@ -105,13 +102,19 @@ public class TaskAdaptor extends BaseAdapter {
      */
 
     private class TaskViewHolder {
-        protected TextView textViewTaskTitle, textViewTaskDescription;
+        protected TextView textViewTaskTitle, textViewTaskDescription, textviewOtherDetails;
         protected CheckBox checkBoxTaskComplete;
+        protected LinearLayout linearLayout;
+
 
         public TaskViewHolder(View view) {
+            linearLayout = view.findViewById(R.id.layout_item_task);
+
             textViewTaskTitle = view.findViewById(R.id.textview_task_title);
             textViewTaskDescription = view.findViewById(R.id.textview_task_description);
             checkBoxTaskComplete = view.findViewById(R.id.checkbox_task_complete);
+
+            textviewOtherDetails = view.findViewById(R.id.textview_other_details);
         }
     }
 }

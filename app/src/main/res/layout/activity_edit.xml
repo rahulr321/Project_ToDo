@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="5dp"
-    tools:context="com.rahul.todo.AddActivity">
+    tools:context="com.rahul.todo.EditActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,8 +36,10 @@
                 android:layout_marginBottom="2dp"
                 android:ems="10"
                 android:hint="@string/task_title_hint"
-                android:inputType="textPersonName" >
-                <requestFocus /></EditText>
+                android:inputType="textPersonName">
+
+                <requestFocus />
+            </EditText>
         </LinearLayout>
 
         <LinearLayout
